@@ -1,0 +1,20 @@
+#!/bin/bash
+index=$(curl -s "https://www.youtube.com/results?search_query=$2")
+x=($(grep -o "rer\":{\"videoId\":\"[a-zA-Z0-9_-]*..." <<< $index | sed -e 's/rer"\:{"videoId":"//g' -e 's/","//g'))
+t=($(grep -o '}\]},"title":{"runs":\[{"text":"[^"]*' <<< $index | sed -e 's/}\]},"title"\:{"runs"\:\[{"text"\:"//g' -e 's/ /_/g'))
+n=0
+for video in ${t[@]};
+do
+	args+=("$n" " $video")
+	n=$(($n+1))
+done
+num=$(whiptail --title "Terminal YT Client" --menu "Choose video to watch" 25 100 18 ${args[@]} 3>&1 1>&2 2>&3)
+quality=$(whiptail --title "Terminal YT Client" --menu "Choose video resolution" 25 100 18 "240" "p" "360" "p" "480" "p" "720" "p" "1080" "p"   3>&1 1>&2 2>&3)
+case $1 in
+	p)	
+		mpv --ytdl-format="bestvideo[height<=?$quality]+bestaudio/best" "https://www.youtube.com/watch?v=${x[$num]}"
+	;;
+	d)
+	yt-dlp -f "bestvideo[height<=?$quality]+bestaudio/best" "https://www.youtube.com/watch?v=${x[$num]}"
+	;;
+esac
