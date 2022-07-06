@@ -1,15 +1,24 @@
 # tmyt
 **Terminal youtube client**
-![](screenshot.png)
+
 Small script to select videos in terminal and watch them with mpv.
+
+<img src="screenshot.png" alt="drawing" width="700" align="center" />
+
+**Features**
++ Choose video quality
++ Download/watch videos
 
 **Dependencies**
 + whiptail
-+ mpv
++ mpv (for watchling online)
++ yt-dlp (for downloading)
 
 **Installation**
-+ wget ...
-+ #ln -s /absolute/path\ to/tmyt /bin/tmyt
++ `$wget https://raw.githubusercontent.com/tzrn/tmyt/main/tmyt`
++ `#ln -s /absolute/path\ to/tmyt /bin/tmyt`
 
 **Usage**
-+ `tmyt search+query`
++ `tmyt p search+query` to play video
++ `tmyt d search+query` to play video
++ choose video and quality
