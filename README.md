@@ -10,12 +10,12 @@ Small script to select videos in terminal and watch them with mpv.
 + Download/watch videos
 
 **Dependencies**
-+ whiptail
 + mpv (for watchling online)
 + yt-dlp (for downloading)
 
 **Installation**
 + `$wget https://raw.githubusercontent.com/tzrn/tmyt/main/tmyt`
++ `cmod +x tmyt`
 + `#ln -s /absolute/path\ to/tmyt /bin/tmyt`
 
 **Usage**
