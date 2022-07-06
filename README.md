@@ -20,5 +20,5 @@ Small script to select videos in terminal and watch them with mpv.
 
 **Usage**
 + `tmyt p search+query` to play video
-+ `tmyt d search+query` to play video
++ `tmyt d search+query` to download video
 + choose video and quality
