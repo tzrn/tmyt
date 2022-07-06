@@ -15,7 +15,7 @@ Small script to select videos in terminal and watch them with mpv.
 
 **Installation**
 + `$wget https://raw.githubusercontent.com/tzrn/tmyt/main/tmyt`
-+ `cmod +x tmyt`
++ `$cmod +x tmyt`
 + `#ln -s /absolute/path\ to/tmyt /bin/tmyt`
 
 **Usage**
