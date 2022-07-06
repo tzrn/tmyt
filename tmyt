@@ -1,7 +1,9 @@
 #!/bin/bash
+IFS="
+"
 index=$(curl -s "https://www.youtube.com/results?search_query=$2")
 x=($(grep -o "rer\":{\"videoId\":\"[a-zA-Z0-9_-]*..." <<< $index | sed -e 's/rer"\:{"videoId":"//g' -e 's/","//g'))
-t=($(grep -o '}\]},"title":{"runs":\[{"text":"[^"]*' <<< $index | sed -e 's/}\]},"title"\:{"runs"\:\[{"text"\:"//g' -e 's/ /_/g'))
+t=($(grep -o '}\]},"title":{"runs":\[{"text":"[^}]*\"\}' <<< $index | sed -e 's/}\]},"title"\:{"runs"\:\[{"text"\:"//g' -e 's/"}//g' -e 's/\\"/"/g' -e 's/\\u0026/and/g'))
 n=0
 for video in ${t[@]};
 do
