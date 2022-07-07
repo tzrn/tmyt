@@ -15,14 +15,15 @@ Small script to select videos in terminal and watch them with mpv.
 + yt-dlp (for downloading)
 
 **Installation**
-+ `$wget https://raw.githubusercontent.com/tzrn/tmyt/main/tmyt`
-+ `$chmod +x tmyt`
-+ `#ln -s tmyt /bin/tmyt`
++ `wget https://raw.githubusercontent.com/tzrn/tmyt/main/tmyt`
++ `chmod +x tmyt`
++ `sudo mv tmyt /bin/tmyt`
+
 
 **Usage**
 + `tmyt kittens` searches for kittens; plays selected
 + `tmyt -da kittens` searches for kittens; downloads audio of selected
-+ To get whiptail colorscheme as shown on screenshot add following to your shell starting script (.bashrc .zshrc etc.)
++ To get whiptail colorscheme as shown on screenshot add following to your shell startup script (.bashrc .zshrc etc.)
 
 ```
 export NEWT_COLORS='root=,black
