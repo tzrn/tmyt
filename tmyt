@@ -1,22 +1,62 @@
 #!/bin/bash
 IFS="
 "
-index=$(curl -s "https://www.youtube.com/results?search_query=$2")
-x=($(grep -o "rer\":{\"videoId\":\"[a-zA-Z0-9_-]*..." <<< $index | sed -e 's/rer"\:{"videoId":"//g' -e 's/","//g'))
+usage()
+{
+cat<<'EOF'
+usage:
+tmyt [OPTION]... <query>
+
+options:
+-a only audio
+-d download
+-h print this help messege
+EOF
+exit 1
+}
+
+while getopts ":dah" opt
+do
+	case $opt in
+	d) op="d";;
+	a) audio=true;;
+	h) usage;;
+	\?) echo unknown option -$opt; usage; exit 1;;
+	esac
+done
+shift $(($OPTIND-1))
+if test -z $op; then op="p"; fi
+
+query=$@;
+index=$(curl -s "https://www.youtube.com/results?search_query=$(echo $query | sed 's/ /+/g')")
+x=($(grep -o "\"videoRenderer\":{\"videoId\":\"[a-zA-Z0-9_-]*..." <<< $index | sed -e 's/"videoRenderer"\:{"videoId":"//g' -e 's/","//g'))
 t=($(grep -o '}\]},"title":{"runs":\[{"text":"[^}]*\"\}' <<< $index | sed -e 's/}\]},"title"\:{"runs"\:\[{"text"\:"//g' -e 's/"}//g' -e 's/\\"/"/g' -e 's/\\u0026/and/g'))
+
 n=0
 for video in ${t[@]};
 do
 	args+=("$n" " $video")
 	n=$(($n+1))
 done
-num=$(whiptail --title "Terminal YT Client" --menu "Choose video to watch" 25 100 18 ${args[@]} 3>&1 1>&2 2>&3)
-quality=$(whiptail --title "Terminal YT Client" --menu "Choose video resolution" 25 100 18 "240" "p" "360" "p" "480" "p" "720" "p" "1080" "p"   3>&1 1>&2 2>&3)
-case $1 in
-	p)	
-		mpv --ytdl-format="bestvideo[height<=?$quality]+bestaudio/best" "https://www.youtube.com/watch?v=${x[$num]}"
+
+num=$(whiptail --title "Results for: $query" --menu "Choose video to watch" 25 100 18 ${args[@]}  3>&1 1>&2 2>&3)
+if [ $? = 1 ]; then exit 1; fi
+if [ ! $audio ]; then
+quality=$(whiptail --title "Choose format" --menu "Choose video resolution" 25 100 18 "240" "p" "360" "p" "480" "p" "720" "p" "1080" "p" "audio" " " 3>&1 1>&2 2>&3)
+if [ $? = 1 ]; then exit 1; fi
+fi
+
+if [[ $audio || $quality = "audio" ]]; then
+qua_opts="bestaudio/best"
+else
+qua_opts="bestvideo[height<=?$quality]+bestaudio/best"
+fi
+
+case $op in
+	p)
+		mpv --ytdl-format=$qua_opts "https://www.youtube.com/watch?v=${x[$num]}"
 	;;
 	d)
-	yt-dlp -f "bestvideo[height<=?$quality]+bestaudio/best" "https://www.youtube.com/watch?v=${x[$num]}"
+		yt-dlp -f $qua_opts "https://www.youtube.com/watch?v=${x[$num]}"
 	;;
 esac

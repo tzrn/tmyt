@@ -8,6 +8,7 @@ Small script to select videos in terminal and watch them with mpv.
 **Features**
 + Choose video quality
 + Download/watch videos
++ Audio playback/download
 
 **Dependencies**
 + mpv (for watchling online)
@@ -15,10 +16,20 @@ Small script to select videos in terminal and watch them with mpv.
 
 **Installation**
 + `$wget https://raw.githubusercontent.com/tzrn/tmyt/main/tmyt`
-+ `$cmod +x tmyt`
-+ `#ln -s /absolute/path\ to/tmyt /bin/tmyt`
++ `$chmod +x tmyt`
++ `#ln -s tmyt /bin/tmyt`
 
 **Usage**
-+ `tmyt p search+query` to play video
-+ `tmyt d search+query` to download video
-+ choose video and quality
++ `tmyt kittens` searches for kittens plays selected
++ `tmyt -da kittens` searches for kittens downloads audio of selected
++ To get whiptail colorscheme as shown on screenshot add following to your shell starting script (.bashrc .zshrc etc.)
+`export NEWT\_COLORS='root=,black\
+border=red,black\
+title=red,black\
+roottext=red,black\
+window=red,black\
+textbox=white,black\
+compactbutton=white,black\
+listbox=white,black\
+actlistbox=black,white\
+actsellistbox=black,red'`
