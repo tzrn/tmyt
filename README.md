@@ -20,16 +20,19 @@ Small script to select videos in terminal and watch them with mpv.
 + `#ln -s tmyt /bin/tmyt`
 
 **Usage**
-+ `tmyt kittens` searches for kittens plays selected
-+ `tmyt -da kittens` searches for kittens downloads audio of selected
++ `tmyt kittens` searches for kittens; plays selected
++ `tmyt -da kittens` searches for kittens; downloads audio of selected
 + To get whiptail colorscheme as shown on screenshot add following to your shell starting script (.bashrc .zshrc etc.)
-`export NEWT\_COLORS='root=,black\
-border=red,black\
-title=red,black\
-roottext=red,black\
-window=red,black\
-textbox=white,black\
-compactbutton=white,black\
-listbox=white,black\
-actlistbox=black,white\
-actsellistbox=black,red'`
+
+```
+export NEWT_COLORS='root=,black
+border=red,black 
+title=red,black
+roottext=red,black
+window=red,black 
+textbox=white,black
+compactbutton=white,black
+listbox=white,black
+actlistbox=black,white
+actsellistbox=black,red'
+```
