@@ -1,62 +1,156 @@
 #!/bin/bash
 IFS="
 "
+if ! test -d ~/.tmyt; then mkdir ~/.tmyt; fi
+
 usage()
 {
 cat<<'EOF'
-usage:
-tmyt [OPTION]... <query>
-
+usage: tmyt [OPTION]... <query>
 options:
 -a only audio
 -d download
 -h print this help messege
+-c go to channels
+-h go to history
+-l to loop last page
 EOF
 exit 1
 }
 
-while getopts ":dah" opt
-do
-	case $opt in
-	d) op="d";;
-	a) audio=true;;
-	h) usage;;
-	\?) echo unknown option -$opt; usage; exit 1;;
+search()
+{
+	index=$(curl -s "https://www.youtube.com/results?search_query=$(echo $query | sed 's/ /+/g')")
+	x=($(grep -o '"videoRenderer":{"videoId":"[a-zA-Z0-9_-]*' <<< $index | sed -e 's/"videoRenderer"\:{"videoId":"//g'))
+	t=($(grep -o '}\]},"title":{"runs":\[{"text":"[^}]*\"\}' <<< $index | sed -e 's/}\]},"title"\:{"runs"\:\[{"text"\:"//g' -e 's/"}//g' -e 's/\\"/"/g' -e 's/\\u0026/and/g'))
+	title="Search results for $query"	
+	play
+}
+
+hist()
+{
+	if ! [[ -f ~/.tmyt/hist ]]; then
+	whiptail --title "Error" --msgbox "No history yet" 8 78
+	if ! test $mn; then exit 1; else menu; fi 
+	fi
+	h=$(uniq ~/.tmyt/hist | tac)
+	x=($(cut -d ' ' -f 1 <<< $h))
+	t=($(cut -d ' ' -f 2- <<< $h))
+	title="History"	
+	play
+}
+
+chann_sel()
+{
+	if ! [[ -f ~/.tmyt/channels ]]; then
+	whiptail --title "Error" --msgbox "No channels file." 8 78
+	if ! test $mn; then exit 1; else menu; fi 
+	fi 
+	l=($(cat ~/.tmyt/channels | cut -d ' ' -f 1))
+	c=($(cat ~/.tmyt/channels | cut -d ' ' -f 2-))
+	n=0
+	for channel in ${c[@]};
+	do
+		args+=("$n" " $channel")
+		n=$(($n+1))
+	done
+	ch=$(whiptail --title "Channels" --menu " " 25 100 18 ${args[@]}  3>&1 1>&2 2>&3)
+	cancel
+	index=$(curl -s "https://www.youtube.com/c/${l[$ch]}/videos")
+	x=($(grep -o '"gridVideoRenderer":{"videoId":"[a-zA-Z0-9_-]*' <<< $index | sed 's/"gridVideoRenderer":{"videoId":"//g'))
+	t=($(grep -o '}\]},"title":{"runs":\[{"text":"[^}]*\"\}' <<< $index | sed -e 's/}\]},"title"\:{"runs"\:\[{"text"\:"//g' -e 's/"}//g' -e 's/\\"/"/g' -e 's/\\u0026/and/g'))
+	play
+}
+
+play()
+{
+	n=0
+	args=()
+	for video in ${t[@]};
+	do
+		args+=("$n" " $video")
+		n=$(($n+1))
+	done
+	num=$(whiptail --title "$title" --menu "Choose video to watch" 25 100 18 ${args[@]}  3>&1 1>&2 2>&3)
+	cancel
+	if [ $? = 1 ]; then exit 1; fi
+	
+	if [ ! $audio ]; then
+	if [ $? = 1 ]; then exit 1; fi
+	fi
+	
+	if [[ $audio || $quality = "audio" ]]; then
+	qua_opts="bestaudio/best"
+	else
+	quality=$(whiptail --title "Choose format" --menu "Choose video resolution" 25 100 18 "240" "p" "360" "p" "480" "p" "720" "p" "1080" "p" "audio" " " 3>&1 1>&2 2>&3)
+	cancel
+	qua_opts="bestvideo[height<=?$quality]+bestaudio/best"
+	fi
+	
+	case $op in
+		p|"")
+			mpv --ytdl-format=$qua_opts "https://www.youtube.com/watch?v=${x[$num]}"
+			echo ${x[$num]}\  ${t[$num]} >> ~/.tmyt/hist
+		;;
+		d)
+			yt-dlp -f $qua_opts "https://www.youtube.com/watch?v=${x[$num]}"
+		;;
 	esac
-done
-shift $(($OPTIND-1))
-if test -z $op; then op="p"; fi
+	if [[ ! menu || ! s ]]; then exit 1; else play; fi
+}
 
-query=$@;
-index=$(curl -s "https://www.youtube.com/results?search_query=$(echo $query | sed 's/ /+/g')")
-x=($(grep -o "\"videoRenderer\":{\"videoId\":\"[a-zA-Z0-9_-]*..." <<< $index | sed -e 's/"videoRenderer"\:{"videoId":"//g' -e 's/","//g'))
-t=($(grep -o '}\]},"title":{"runs":\[{"text":"[^}]*\"\}' <<< $index | sed -e 's/}\]},"title"\:{"runs"\:\[{"text"\:"//g' -e 's/"}//g' -e 's/\\"/"/g' -e 's/\\u0026/and/g'))
+cancel()
+{
+	if [ $? = 1 ]; then
+	if test $mn; then
+	menu; else exit 1;
+	fi
+	fi
+}
 
-n=0
-for video in ${t[@]};
-do
-	args+=("$n" " $video")
-	n=$(($n+1))
-done
+menu()
+{
+	menu=$(whiptail --title "Menu" --menu "" 10 20 4  \
+	"0" "Search" \
+	"1" "Channels" \
+	"2" "History" \
+	"3" "Exit" \
+	3>&1 1>&2 2>&3)
+	if [ $? = 1 ]; then exit 1; fi
+	case $menu in
+		0) query=$(whiptail --inputbox "Search..." 8 39 --title "Search" 3>&1 1>&2 2>&3)
+		cancel
+		op=p
+		search;;
+		1) chann_sel;;
+		2) hist;;
+		3) exit 1;;
+	esac
+}
 
-num=$(whiptail --title "Results for: $query" --menu "Choose video to watch" 25 100 18 ${args[@]}  3>&1 1>&2 2>&3)
-if [ $? = 1 ]; then exit 1; fi
-if [ ! $audio ]; then
-quality=$(whiptail --title "Choose format" --menu "Choose video resolution" 25 100 18 "240" "p" "360" "p" "480" "p" "720" "p" "1080" "p" "audio" " " 3>&1 1>&2 2>&3)
-if [ $? = 1 ]; then exit 1; fi
-fi
-
-if [[ $audio || $quality = "audio" ]]; then
-qua_opts="bestaudio/best"
+if test $# -eq 0; then
+	mn=1
+	menu
 else
-qua_opts="bestvideo[height<=?$quality]+bestaudio/best"
+	while getopts ":dahvcl" opt
+	do
+		case $opt in
+		d) op="d";;
+		l) l=true;;
+		a) audio=true;;
+		h|\?) usage; exit 1;;
+		esac
+	done
+	OPTIND=1
+	while getopts ":dahvcl" opt
+	do
+		case $opt in
+		v) hist;;
+		c) chann_sel;;
+		esac
+	done
+	shift $(($OPTIND-1))
+	query=$@;
+	if test -z $query; then menu; else
+	search; fi
 fi
-
-case $op in
-	p)
-		mpv --ytdl-format=$qua_opts "https://www.youtube.com/watch?v=${x[$num]}"
-	;;
-	d)
-		yt-dlp -f $qua_opts "https://www.youtube.com/watch?v=${x[$num]}"
-	;;
-esac
