@@ -117,6 +117,7 @@ menu()
 	"3" "Exit" \
 	3>&1 1>&2 2>&3)
 	if [ $? = 1 ]; then exit 1; fi
+	args=()
 	case $menu in
 		0) query=$(whiptail --inputbox "Search..." 8 39 --title "Search" 3>&1 1>&2 2>&3)
 		cancel
