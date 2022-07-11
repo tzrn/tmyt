@@ -56,6 +56,7 @@ chann_sel()
 		n=$(($n+1))
 	done
 	ch=$(whiptail --title "Channels" --menu " " 25 100 18 ${args[@]}  3>&1 1>&2 2>&3)
+	title="${c[ch]}"
 	cancel
 	#index=$(curl -s "https://www.youtube.com/c/${l[$ch]}/videos")
 	index=$(curl -s "https://www.youtube.com/channel/${l[$ch]}/videos") #Although link with /channels/ is longer then with /c/ mpv shows it so its more convinient
@@ -104,8 +105,8 @@ play()
 		;;
 	esac
 
-	echo ${x[$num]}\  ${t[$num]} >> ~/.tmyt/hist
-	if [[ ! $menu && ! $l ]]; then exit 1; else play; fi
+	echo ${x[$num]}\ ${t[$num]} >> ~/.tmyt/hist
+	if [[ $menu || $l ]]; then play; else exit 1; fi
 }
 
 cancel()
