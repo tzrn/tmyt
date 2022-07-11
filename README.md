@@ -17,9 +17,9 @@ Small script to select videos in terminal and watch them with mpv.
 + yt-dlp (for downloading)
 
 **Installation**
-+ `$wget https://raw.githubusercontent.com/tzrn/tmyt/main/tmyt`
-+ `$chmod +x tmyt`
-+ `#mv tmyt /bin/tmyt`
++ `$ wget https://raw.githubusercontent.com/tzrn/tmyt/main/tmyt`
++ `$ chmod +x tmyt`
++ `# mv tmyt /bin/tmyt`
 
 **Usage**
 + `tmyt` opens defaut menu
@@ -27,7 +27,9 @@ Small script to select videos in terminal and watch them with mpv.
 + `tmyt -da kittens` searches for kittens downloads audio of selected
 + `tmyt -v` to go directly to the history
 + `tmyt -c` to go directly to channels
-+ channels added by editing ~/.tmyt/channels file. Each string should countain channel id and channel name separated by space. e.g. somechannel Channel name\n
++ `tmyt -b` will play and download video at the same time
++ channels added by editing ~/.tmyt/channels file. Each string should contain channel id and channel name separated by space. e.g. somechannel Channel name\n
++ default download location is ~/Downloads to change it write wanted location to ~/.tmyt/dndir e.g. /home/robot/Videos
 + To get whiptail colorscheme as shown on screenshot add following to your shell starting script (.bashrc .zshrc etc.)
 ```
 export NEWT_COLORS='root=,black
