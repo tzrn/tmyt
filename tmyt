@@ -78,11 +78,6 @@ play()
 	done
 	num=$(whiptail --title "$title" --menu "Choose video to watch" 25 110 18 ${args[@]}  3>&1 1>&2 2>&3)
 	cancel
-	if [ $? = 1 ]; then exit 1; fi
-	
-	if [ ! $audio ]; then
-	[ $? = 1 ] && exit 1
-	fi
 	
 	if [[ $audio || $quality = "audio" ]]; then
 	qua_opts="bestaudio/best"
