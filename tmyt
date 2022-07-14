@@ -46,7 +46,7 @@ chann_sel()
 	if ! [[ -f ~/.tmyt/channels ]]; then
 	whiptail --title "Error" --msgbox "No channels file." 8 78
 	if ! test $mn; then exit 1; else menu; fi 
-	fi 
+	fi
 	l=($(cat ~/.tmyt/channels | cut -d ' ' -f 1))
 	c=($(cat ~/.tmyt/channels | cut -d ' ' -f 2-))
 	n=0
@@ -56,8 +56,8 @@ chann_sel()
 		n=$(($n+1))
 	done
 	ch=$(whiptail --title "Channels" --menu " " 25 100 18 ${args[@]}  3>&1 1>&2 2>&3)
-	title="${c[ch]}"
 	cancel
+	title="${c[ch]}"
 	#index=$(curl -s "https://www.youtube.com/c/${l[$ch]}/videos")
 	index=$(curl -s "https://www.youtube.com/channel/${l[$ch]}/videos") #Although link with /channels/ is longer then with /c/ mpv shows it so its more convinient
 	x=($(grep -o '"gridVideoRenderer":{"videoId":"[a-zA-Z0-9_-]*' <<< $index | sed 's/"gridVideoRenderer":{"videoId":"//g'))
@@ -79,12 +79,16 @@ play()
 	num=$(whiptail --title "$title" --menu "Choose video to watch" 25 110 18 ${args[@]}  3>&1 1>&2 2>&3)
 	cancel
 	
-	if [[ $audio || $quality = "audio" ]]; then
+	if [[ $audio ]]; then
 	qua_opts="bestaudio/best"
-	else
+	else		
 	quality=$(whiptail --title "youtube.com/watch?v=${x[$num]}" --menu "Choose video resolution" 25 100 18 "240" "p" "360" "p" "480" "p" "720" "p" "1080" "p" "audio" " " 3>&1 1>&2 2>&3)
 	cancel
-	qua_opts="bestvideo[height<=?$quality]+bestaudio/best"
+	if [ $quality = "audio" ]; then
+		qua_opts="bestaudio/best"
+	else
+		qua_opts="bestvideo[height<=?$quality]+bestaudio/best"
+	fi
 	fi
 	
 	case $op in
@@ -107,9 +111,8 @@ play()
 cancel()
 {
 	if [ $? = 1 ]; then
-	if test $mn; then
-	menu; else exit 1;
-	fi
+	test $menu && menu
+	exit 1
 	fi
 }
 
