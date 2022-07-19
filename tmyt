@@ -1,7 +1,7 @@
 #!/bin/bash
 IFS="
 "
-if ! test -d ~/.tmyt; then mkdir ~/.tmyt; fi
+if ! test -d ~/.config/tmyt; then mkdir ~/.config/tmyt; fi
 
 usage()
 {
@@ -30,11 +30,11 @@ search()
 
 hist()
 {
-	if ! [[ -f ~/.tmyt/hist ]]; then
+	if ! [[ -f ~/.config/tmyt/hist ]]; then
 	whiptail --title "Error" --msgbox "No history yet" 8 78
 	if ! test $mn; then exit 1; else menu; fi 
 	fi
-	h=$(uniq ~/.tmyt/hist | tac)
+	h=$(uniq ~/.config/tmyt/hist | tac)
 	x=($(cut -d ' ' -f 1 <<< $h))
 	t=($(cut -d ' ' -f 2- <<< $h))
 	title="History"	
@@ -43,12 +43,12 @@ hist()
 
 chann_sel()
 {
-	if ! [[ -f ~/.tmyt/channels ]]; then
+	if ! [[ -f ~/.config/tmyt/channels ]]; then
 	whiptail --title "Error" --msgbox "No channels file." 8 78
 	if ! test $mn; then exit 1; else menu; fi 
 	fi
-	l=($(cat ~/.tmyt/channels | cut -d ' ' -f 1))
-	c=($(cat ~/.tmyt/channels | cut -d ' ' -f 2-))
+	l=($(cat ~/.config/tmyt/channels | cut -d ' ' -f 1))
+	c=($(cat ~/.config/tmyt/channels | cut -d ' ' -f 2-))
 	n=0
 	for channel in ${c[@]};
 	do
@@ -104,7 +104,7 @@ play()
 		;;
 	esac
 
-	echo ${x[$num]}\ ${t[$num]} >> ~/.tmyt/hist
+	echo ${x[$num]}\ ${t[$num]} >> ~/.config/tmyt/hist
 	if [[ $menu || $l ]]; then play; else exit 1; fi
 }
 
@@ -163,7 +163,7 @@ else
 	query=$@;
 
 	dndir="$HOME/Downloads"
-	[ -f ~/.tmyt/dndir ] && dndir=$(cat ~/.tmyt/dndir);
+	[ -f ~/.config/tmyt/dndir ] && dndir=$(cat ~/.config/tmyt/dndir);
 
 	if test -z $query; then menu;
 	else search; fi
