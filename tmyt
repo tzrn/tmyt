@@ -23,7 +23,7 @@ search()
 {
 	index=$(curl -s "https://www.youtube.com/results?search_query=$(echo $query | sed 's/ /+/g')")
 	x=($(grep -o '"videoRenderer":{"videoId":"[a-zA-Z0-9_-]*' <<< $index | sed -e 's/"videoRenderer"\:{"videoId":"//g'))
-	t=($(grep -o '}\]},"title":{"runs":\[{"text":"[^}]*\"\}' <<< $index | sed -e 's/}\]},"title"\:{"runs"\:\[{"text"\:"//g' -e 's/"}//g' -e 's/\\"/"/g' -e 's/\\u0026/and/g'))
+	t=($(grep -o '},"title":{"runs":\[{"text":"[^}]*\"\}' <<< $index | sed -e 's/},"title"\:{"runs"\:\[{"text"\:"//g' -e 's/"}//g' -e 's/\\"/"/g' -e 's/\\u0026/and/g'))
 	title="Search results for $query"	
 	play
 }
@@ -61,7 +61,7 @@ chann_sel()
 	#index=$(curl -s "https://www.youtube.com/c/${l[$ch]}/videos")
 	index=$(curl -s "https://www.youtube.com/channel/${l[$ch]}/videos") #Although link with /channels/ is longer then with /c/ mpv shows it so its more convinient
 	x=($(grep -o '"gridVideoRenderer":{"videoId":"[a-zA-Z0-9_-]*' <<< $index | sed 's/"gridVideoRenderer":{"videoId":"//g'))
-	t=($(grep -o '}\]},"title":{"runs":\[{"text":"[^}]*\"\}' <<< $index | sed -e 's/}\]},"title"\:{"runs"\:\[{"text"\:"//g' -e 's/"}//g' -e 's/\\"/"/g' -e 's/\\u0026/and/g'))
+	t=($(grep -o '},"title":{"runs":\[{"text":"[^}]*\"\}' <<< $index | sed -e 's/},"title"\:{"runs"\:\[{"text"\:"//g' -e 's/"}//g' -e 's/\\"/"/g' -e 's/\\u0026/and/g'))
 	play
 }
 
